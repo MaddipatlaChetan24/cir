@@ -1,0 +1,13 @@
+{
+  "name": "study-abroad-admission",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Admission landing page for the exam-prep course (CIR), deployed on Vercel with Vercel KV storage.",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@vercel/kv": "^2.0.0",
+    "exceljs": "^4.4.0"
+  }
+}
