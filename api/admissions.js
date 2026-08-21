@@ -1,9 +1,7 @@
 const { kv } = require('@vercel/kv');
+const { validateSubmission } = require('../lib/admissions');
 
 const LIST_KEY = 'admissions:list';
-const REQUIRED_FIELDS = ['name', 'registerNumber', 'department', 'year', 'programTrack'];
-const YEAR_OPTIONS = ['II Year', 'III Year', 'Other'];
-const TRACK_OPTIONS = ['Only GRE', 'Only IELTS', 'GRE+IELTS'];
 
 // NOTE: prototype-only auth. A plaintext passcode compared on the server is
 // still not real authentication (no hashing, no sessions, no rate limiting).
@@ -13,28 +11,9 @@ const ADMIN_PASSCODE = process.env.ADMIN_PASSCODE || 'DYcfNEFRY7drmL7i';
 
 module.exports = async function handler(req, res) {
   if (req.method === 'POST') {
-    const body = req.body || {};
-    for (const field of REQUIRED_FIELDS) {
-      if (!body[field] || !String(body[field]).trim()) {
-        return res.status(400).json({ error: `Missing required field: ${field}` });
-      }
-    }
-    if (!YEAR_OPTIONS.includes(body.year)) {
-      return res.status(400).json({ error: 'Invalid year of study.' });
-    }
-    if (!TRACK_OPTIONS.includes(body.programTrack)) {
-      return res.status(400).json({ error: 'Invalid program track.' });
-    }
+    const { error, record } = validateSubmission(req.body || {});
+    if (error) return res.status(400).json({ error });
 
-    const record = {
-      name: String(body.name).trim(),
-      registerNumber: String(body.registerNumber).trim(),
-      department: String(body.department).trim(),
-      year: body.year,
-      programTrack: body.programTrack,
-      consent: !!body.consent,
-      submittedAt: new Date().toISOString(),
-    };
     await kv.rpush(LIST_KEY, record);
     return res.status(200).json({ ok: true });
   }

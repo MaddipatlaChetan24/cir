@@ -4,10 +4,15 @@
   "private": true,
   "description": "Admission landing page for the exam-prep course (CIR), deployed on Vercel with Vercel KV storage.",
   "scripts": {
+    "start": "node dev-server.js",
     "dev": "vercel dev"
   },
   "dependencies": {
     "@vercel/kv": "^2.0.0",
     "exceljs": "^4.4.0"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
   }
 }
